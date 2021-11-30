@@ -39,7 +39,7 @@ class Events(BaseModel):
 
     def published(self):
         now = timezone.now()
-        if self.startdate < now:
+        if self.enddate < now:
             return True
         return False
 

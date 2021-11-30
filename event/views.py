@@ -18,7 +18,9 @@ class EventListView(generic.ListView):
     template_name = 'event/index.html'
     context_object_name = "event_list"
     ordering = ['-startdate']
+
     paginate_by = 10
+
     #
     # def get_context_data(self, *args, **kwargs):
     #     context = super(EventListView, self).get_context_data(*args, **kwargs)
@@ -30,8 +32,25 @@ class EventListView(generic.ListView):
 
     def get_queryset(self):
         now = timezone.now()
-        queryset = Events.objects.filter(~Q(startdate__gte=now),
-                                         ~Q(enddate__lte=now))
+        query = self.request.GET.get('q')
+        print("Q....>>>", self.request.GET.get('startdate'))
+        print("Q....>>>", self.request.GET.get('category'))
+        category = self.request.GET.get('category', None)
+        startdate = self.request.GET.get('startdate', None)
+        enddate = self.request.GET.get('enddate', None)
+        if query:
+            return Events.objects.filter(
+                Q(title__icontains=query) |
+                Q(location__icontains=query) |
+                Q(description__icontains=query)
+            )
+        elif startdate and enddate:
+            queryset = Events.objects.filter(startdate__gte=startdate, enddate__lte=enddate)
+        elif category:
+            queryset = Events.objects.filter(category=category)
+        else:
+            queryset = Events.objects.filter(~Q(startdate__gte=now),
+                                             ~Q(enddate__lte=now))
         #
         # def get_queryset(params):
         #
@@ -44,3 +63,13 @@ class EventListView(generic.ListView):
         #         qset &= Q(date_created__gte=date_created)
         #     return qset
         return queryset
+
+    def get_context_data(self, **kwargs):
+        queryset = super().get_context_data(**kwargs)
+        queryset['category_list'] = Category.objects.all()
+
+        return queryset
+
+    def post(self, request, **kwargs):
+        print(request.POST)
+        return

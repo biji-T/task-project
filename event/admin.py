@@ -8,7 +8,7 @@ from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 class EventsAdmin(admin.ModelAdmin):
     list_display = ('title', 'startdate','enddate', 'published')
     list_filter = ['category','startdate','enddate']
-    search_fields = ['title']
+    search_fields = ['title','description']
 
 
 admin.site.register(Events, EventsAdmin),

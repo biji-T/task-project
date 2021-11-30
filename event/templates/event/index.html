@@ -1,24 +1,268 @@
 {% extends "base.html" %}
+{% load static %}
+  {% block title %} Event List{% endblock %}
 
-  {% block title %}  My test page   {% endblock %}
+   {% block stylesheets %}
+	    <link href="{% static 'event/css/styles.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+{% endblock stylesheets %}
+<style>
+  * {
+  box-sizing: border-box;
+}
+
+form.example input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+form.example button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: #2196F3;
+  color: white;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-left: none;
+  cursor: pointer;
+}
+
+form.example button:hover {
+  background: #0b7dda;
+}
+
+form.example::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.container {
+  padding: 2rem 0rem;
+}
+
+h4 {
+  margin: 2rem 0rem 1rem;
+}
+
+.table-image {
+  td, th {
+    vertical-align: middle;
+  }
+}
+.item1 { grid-area: header; }
+
+</style>
+
 
   {% block content %}
+	<div id="header">
+		<div class="area">
+			<div id="logo">
+				<a href="index.html"><img src="{% static 'event/images/logo.png'%}" alt="LOGO" height="86" width="170" /></a>
+			</div>
 
-    <ul>
-    {% for i in event_list %}
-        <li><a href="#">{{ i.title }}</a></li>
-        <li><img src="{{ i.cover.url}}"  alt="Img" height="100" width="100" /></li>
-        <li><a href="#">{{ i.location }}</a></li>
-        <li><a href="#">{{ i.startdate }}</a></li>
-        <li><a href="#">{{ i.enddate }}</a></li>
-        <li><a href="#">{{ i.category }}</a></li>
-
-     {% if user.is_authenticated %}
-        <li><a href="">Logout</a></li>
+			<ul id="navigation">
+					<li>
+					 {% if user.is_authenticated %}
+        <li><a href="" class="btn btn-default btn-rounded">Logout</a></li>
           {% else %}
-        <li><a href="">Login</a></li>
+        <li><a href="" class="btn btn-default btn-rounded">+ Login</a></li>
          {% endif %}
+
+				</li>
+<li>
+
+<form class="example form-inline" action=" " style="margin:auto;max-width:300px" method="get" >{% csrf_token %}
+                <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control">
+  <button type="submit" style="float: right;"><i class="fa fa-search"></i></button>
+</form>
+</li>
+            </ul>
+        </div></div>
+<section>
+	<form action=" " method="get" >
+	Filter by :<select id="filterstate">
+    <option value="0" >select</option>
+	    <option value="category">Category</option>
+    <option  value="range_value">Date Range</option>
+</select><a href="{% url 'event:home' %} ">Back</a>
+            <div class="row">
+				 <div class="col" >
+                      <select class="form-control" id="CategoryId" name="category" style="width:30%">
+ <option  value="" selected="selected">--select--</option>
+  {% for org in category_list %}
+   <option value="{{org.id}}">{{org.name|capfirst}}</option>
+  {% endfor %}
+</select> </div>
+
+
+    <div class="col range-date" style="width:20%;" >
+		  <label for="startdate">Startdate:</label>
+		<input type="datetime-local" id="startdate" name="startdate"></div>
+					   <div class="col range-date" style="width:20%;">
+						   <label for="enddate">End date:</label>
+					   <input type="datetime-local" id="enddate" name="enddate">
+
+					   </div>
+			</div>
+		<br>
+<center><button type="submit" value="submit" id="submit">submit</button></center>
+</form>
+</section></div>
+<br>
+
+
+<div id="contents">
+		<div id="adbox">
+
+			<div class="area"></div>
+			<ul><h1><span><center><b>Current Event</b></center></span></h1>
+					 {% for i in event_list %}
+					<li>
+						<div id="eventbox" style="height: 250px;">
+							<h2><span>{{ i.title }}</span></h2><br>
+							<img src="{{ i.cover.url}}"  alt="Img" height="100" width="100" />
+<p>{{ i.description }}</p>
+
+							<h3><span>Venue:</span>  {{ i.location }}</h3>
+							<p>
+								{{ i.startdate }}
+							</p>
+
+	<div class="container-1 left">
+   <div class="f-card content">
+<!--      <h2>{{i.created_on}}</h2>-->
+<!--      <p>{{i.name}}.</p>-->
+      <div class="text-left">
+         <span class="pointer">
+            {% if request.user in i.likes.users.all%}
+            <!-- already liked-->
+            <a href=""> <i
+               data-toggle="tooltip" data-placement="bottom" title="Unlike"
+               class="like fas fa-thumbs-up pr-2">
+            <span>{{i.get_total_likes}}</span>
+            </i>
+            </a>
+            {% else %}
+            <!--not liked-->
+            <a href=""><i
+               data-toggle="tooltip" data-placement="bottom" title="Like" style="color:gray;"
+               class="default-icon fas fa-thumbs-up pr-2 info">
+            <span> {% if i.get_total_likes  %}{{i.get_total_likes}} {% else %} 0
+            {% endif %}</span></i>
+            </a>
+            {% endif %}
+         </span>
+         <span class="ml-3 pointer">
+         {% if request.user in i.dis_likes.users.all %}
+         <a href=""><i
+            data-toggle="tooltip" data-placement="bottom" title="i remove dislike this"
+            class="dislike fas fa-thumbs-down pr-2">
+         <span>{{i.get_total_dis_likes}}</span></i>
+         </a>
+         {% else %}
+         <a href=""><i
+            data-toggle="tooltip" data-placement="bottom" title="i dislike this " style="color:gray;"
+            class="default-icon fas fa-thumbs-down pr-2">
+         <span>{% if  i.get_total_dis_likes %}{{i.get_total_dis_likes}}
+         {% else %} 0 {% endif %}</span></i>
+         </a>
+         {% endif %}
+         </span>
+             <form action="" method="POST">
+                        {% csrf_token %}
+                        <button type="submit">Checkout</button>
+                    </form>
+
+      </div>
+      <p class="text-right">{{i.user.first_name}} {{i.user.last_name}}.
+         {% if i.user == request.user  %}
+         <span><a class="circle-card" href="{"><i class="fas fa-edit"></i></a></span>
+         {% endif %}
+      </p>
+
+   </div>
+</div>		</div>
+
+					</li>
+					{% endfor %}
+
+				</ul>
+			</div>
+
+		{% if users.has_other_pages %}
+  <ul class="pagination">
+    {% if users.has_previous %}
+      <li><a href="?page={{ users.previous_page_number }}">&laquo; Previous</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in users.paginator.page_range %}
+      {% if users.number == i %}
+        <li class="active"><span>{{ i }}, <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }} ,</a></li>
+      {% endif %}
     {% endfor %}
-    </ul>
+    {% if users.has_next %}
+      <li><a href="?page={{ users.next_page_number }}">&raquo; Next</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+
+		</div>
+
+			</div>
+
+
+
  {% endblock %}
 
+{% block javascripts %}
+  <script>
+  $(document).ready(function () {
+   $(".range-date").hide();
+ $("#CategoryId").hide();
+ $("#submit").hide();
+    toggleFields();
+       $("#filterstate").change(function () {
+        toggleFields();
+    });
+
+});
+function toggleFields() {
+  if ($("#filterstate").val() === "range_value"){
+
+         $(".range-date").show();
+          $("#submit").show();
+          $("#CategoryId").hide();
+
+}
+    else if  ($("#filterstate").val() === "category"){
+        $("#CategoryId").show();
+        $("#submit").show();
+         $(".range-date").hide();
+}
+    else{
+        $("#CategoryId").hide();
+         $("#range-date").hide();
+         $("#submit").hide();
+
+}
+}
+
+<!--   $('#filter-data').hide();-->
+    </script>
+{% endblock javascripts %}
