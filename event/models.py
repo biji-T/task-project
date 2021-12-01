@@ -54,15 +54,18 @@ class Events(BaseModel):
 
 
 class Booked(BaseModel):
-    users = models.ManyToManyField(User, related_name='requirement_comment_booked')
+    """ book  event """
+
     title = models.OneToOneField(Events, related_name="booked", on_delete=models.CASCADE)
+    users = models.ManyToManyField(User, related_name='requirement_comment_booked')
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.title.title)[:30]
 
 
 class Like(BaseModel):
-    """ like  comment """
+    """ like  event """
 
     title = models.OneToOneField(Events, related_name="likes", on_delete=models.CASCADE)
     users = models.ManyToManyField(User, related_name='requirement_comment_likes')
@@ -72,7 +75,7 @@ class Like(BaseModel):
 
 
 class DisLike(BaseModel):
-    """ Dislike  comment """
+    """ Dislike  event """
 
     title = models.OneToOneField(Events, related_name="dis_likes", on_delete=models.CASCADE)
     users = models.ManyToManyField(User, related_name='requirement_comment_dis_likes')
