@@ -12,9 +12,11 @@
 <style>
 p.c {
   white-space: pre;
-    width: 240px;
+
     height: 120px;
 }
+.column{
+ padding-right :20px;
 }
 
 </style>
@@ -23,10 +25,9 @@ p.c {
   {% block content %}
 	<div id="header">
 		<div class="area">
-			<div id="logo">
-				<a href="index.html"><img src="{% static 'event/images/logo.png'%}" alt="LOGO" height="86" width="170" /></a>
-			</div>
+			<div id="logo" class="alert alert-warning"><strong>Showing only current Event,For any event search</strong>
 
+			</div>
 			<ul id="navigation">
 					<li>
 					 {% if user.is_authenticated %}
@@ -45,8 +46,11 @@ p.c {
 </li>
             </ul>
         </div></div>
+
+<div id="contents">
+		<div id="adbox">
 <section>
-	<form action=" " method="get" >
+	<form  name="myForm"  action=" " method="get" onsubmit="return validateForm()">
 	Filter by :<select id="filterstate">
     <option value="0" >select</option>
 	    <option value="category">Category</option>
@@ -56,8 +60,8 @@ p.c {
 				 <div class="col" >
                       <select class="form-control" id="CategoryId" name="category" style="width:30%">
  <option  value="" selected="selected">--select--</option>
-  {% for org in category_list %}
-   <option value="{{org.id}}">{{org.name|capfirst}}</option>
+  {% for cat in category_list %}
+   <option value="{{org.id}}">{{cat.name|capfirst}}</option>
   {% endfor %}
 </select> </div>
 
@@ -72,22 +76,21 @@ p.c {
 					   </div>
 			</div>
 		<br>
-<center><button type="submit" value="submit" id="submit">submit</button></center>
+<center><button  name="submit" id="submit" type="submit" value="submit">submit</button></center>
+           <div id="error"></div>
 </form>
 </section></div>
-
-
-<div id="contents">
-		<div id="adbox">
-
 			<div class="area"></div>
-			<ul><h1><span><center><b style="text-decoration: underline;">Current Event</b></center></span></h1>
+			<ul><h1><span><center><img src="{% static 'event/images/events.jpg'%}" alt="current Events" height="96" width="200" /></center></span></h1>
 					 {% for i in event_list %}
 					<li>
-						<div id="eventbox" style="height: 250px;">
-							<h2><span style="text-decoration: underline; ">{{ i.title }}</span></h2><br>
-							<img src="{{ i.cover.url}}"  alt="Img" height="100" width="150" />
-                        <p class="c" style=" width: 240px;height: 120px;}">{{ i.description }}</p>
+
+						<div  id="eventbox" style="height: auto;">
+                            <h2><span style="text-decoration: underline;padding-left:20px; ">{{ i.title }}</span></h2>
+                            <div class="row">
+						<div class="column"><img src="{{ i.cover.url}}"  alt="Img" height="200" width="250" style="padding-right: 20px;" /></div>
+                            <div  class="column">
+                        <p class="c">{{ i.description }}</p>
 							<h3 style="font:15px/24px 'Abel-Regular';"><span>Venue:</span>  {{ i.location }}</h3>
 							<h3 style="font:15px/24px 'Abel-Regular';"><span>Category:</span>  {{ i.category }}</h3>
 							<p><span>Date : {{ i.startdate|date:'d/m/Y ' }} - {{ i.enddate|date:'d/m/Y ' }}</span>	</p>
@@ -98,7 +101,7 @@ p.c {
    <div class="f-card content">
 <!--      <h2>{{i.created_on}}</h2>-->
 <!--      <p>{{i.name}}.</p>-->
-      <div class="text-left">
+      <div class="text-left" style="width:240px ;height :30px;">
          <span class="pointer">
             {% if request.user in i.likes.users.all%}
             <!-- already liked-->
@@ -136,12 +139,19 @@ p.c {
          </span>
                       {% if i.published == False %}
 
-                     {% if request.user not in i.booked.users.all %}
+                     {% if request.user in i.booked.users.all %}
 
-             <form action="{% url 'event:create-checkout-session' i.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit">Checkout</button>
-                    </form>  {% endif  %}
+
+                   <button type="button">Booked</button>
+            {% else %}
+<!--                       <button type="submit">-->
+<!--                  <a href="{% url 'event:create-checkout-session' i.id  %}">Book  &#x20b9;500</a></button>-->
+             <form action="{% url 'event:create-checkout-session' i.id %}" method="POST">   {% csrf_token %}
+                                         <button type="submit" style="color:blue;">Book  &#x20b9;500</button>
+             </form>
+
+
+          {% endif  %}
           {% endif  %}
 
       </div>
@@ -154,36 +164,34 @@ p.c {
    </div>
 </div>		</div>
 
-					</li>
+                        </div>      </div></li>
 					{% endfor %}
 
 				</ul>
-			</div>
-{% if is_paginated %}
-<div class="pagination pagination-centered">
-    <ul>
+
+
+
+
+<div class="pagination">
+    <span class="step-links">
         {% if page_obj.has_previous %}
-<li><a href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
         {% endif %}
 
-        {% for i in paginator.page_range %}
-            {% if page_obj.has_next %}
-<li><a href="?page={{ page_obj.number }}">{{i}}</a></li>
-            {% endif %}
-        {% endfor %}
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
         {% if page_obj.has_next %}
-<li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
-
-    </ul>
+    </span>
 </div>
-{% endif %}
 
 
-		</div>
-
-			</div>
+</div>
 
 
 
@@ -222,6 +230,36 @@ function toggleFields() {
 }
 }
 
-<!--   $('#filter-data').hide();-->
+
+function validateForm() {
+  var errors = [];
+
+  var filterstate = $("#filterstate").val();
+  var CategoryId = $("#CategoryId").val();
+  var startdate = $("#startdate").val();
+  var enddate = $("#enddate").val();
+
+  if (filterstate === "") {
+   alert("Check filteration");
+   return false
+  }
+
+  if (filterstate === "category") {
+  if( CategoryId=== ""){
+   alert("Category  can't be blank");
+  }
+   return false
+}
+ if (filterstate === "range_value"){
+ if( startdate=== "" && enddate==="") {
+ alert("Date  can't be blank");
+}
+return false
+}
+else
+
+  return true
+}
+
     </script>
 {% endblock javascripts %}

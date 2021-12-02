@@ -36,11 +36,11 @@ class EventListView(generic.ListView):
     def get_queryset(self):
         now = timezone.now()
         query = self.request.GET.get('q')
-        # print("Q....>>>", self.request.GET.get('startdate'))
-        # print("Q....>>>", self.request.GET.get('category'))
         category = self.request.GET.get('category', None)
         startdate = self.request.GET.get('startdate', None)
         enddate = self.request.GET.get('enddate', None)
+        published = self.request.GET.get('published', None)
+        print(self.request.GET)
         if query:
             return Events.objects.filter(
                 Q(title__icontains=query) |
@@ -51,6 +51,9 @@ class EventListView(generic.ListView):
             queryset = Events.objects.filter(startdate__gte=startdate, enddate__lte=enddate)
         elif category:
             queryset = Events.objects.filter(category=category)
+        elif published:
+            queryset = Events.objects.all().exclude(~Q(startdate__gte=now),
+                                                    ~Q(enddate__lte=now))
         else:
             queryset = Events.objects.filter(~Q(startdate__gte=now),
                                              ~Q(enddate__lte=now))
@@ -62,10 +65,6 @@ class EventListView(generic.ListView):
         queryset['category_list'] = Category.objects.all()
 
         return queryset
-
-    def post(self, request, **kwargs):
-        print(request.POST)
-        return
 
 
 class LoginView(auth_views.LoginView):
@@ -83,7 +82,6 @@ class SignUpView(SuccessMessageMixin, CreateView):
 
 class UpdateCommentVote(LoginRequiredMixin, View):
     login_url = '/login/'
-    redirect_field_name = 'next'
 
     def get(self, request, *args, **kwargs):
 
@@ -128,6 +126,8 @@ class UpdateCommentVote(LoginRequiredMixin, View):
 
 
 class CreateCheckoutSessionView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
     def post(self, request, *args, **kwargs):
         event = Events.objects.get(id=self.kwargs["pk"])
         try:
@@ -136,7 +136,9 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
             Booked.objects.create(title=event, is_paid=True)
         if request.user in event.booked.users.all():
             print("already booked......>>>>>")
-            return
+            messages.success(self.request, 'Form submission successful')
+            return HttpResponseRedirect(self.request.path_info)
+
         else:
             event.booked.users.add(request.user)
 
