@@ -1,3 +1,3 @@
 # task-project
 
-[![Build Status](https://stripe.com/docs/libraries#community-libraries)
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
