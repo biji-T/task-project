@@ -5,7 +5,9 @@ This project is an integration between Stripe and django.Stripe is one of the mo
 
 The full documentation is available on [Read the Docs](https://testdriven.io/blog/setting-up-stripe-connect-with-django/)
 
-
+## Documentation
+[Stripe Documentation](https://stripe.com/docs/checkout/quickstart)
+[Django documentation](https://docs.djangoproject.com/en/3.2/)
 
 ## Requirements
 - Django 3.2
