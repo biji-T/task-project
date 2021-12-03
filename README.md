@@ -8,10 +8,11 @@ The full documentation is available on [Read the Docs](https://testdriven.io/blo
 
 
 ## Requirements
--Django 3.2
--Python 3.6+
--django-crispy-forms
--django-environ
--Pillow==8.4.0
+- Django 3.2
+- Python 3.6+
+- django-crispy-forms
+- django-environ
+- Pillow==8.4.0
+
 
 ![This is an image](https://www.localogy.com/wp-content/uploads/2019/10/stripe-product-image.png).
