@@ -7,6 +7,7 @@ The full documentation is available on [Read the Docs](https://testdriven.io/blo
 
 ## Documentation
 [Stripe Documentation](https://stripe.com/docs/checkout/quickstart)
+
 [Django documentation](https://docs.djangoproject.com/en/3.2/)
 
 ## Requirements
