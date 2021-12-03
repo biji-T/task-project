@@ -25,7 +25,7 @@ p.c {
   {% block content %}
 	<div id="header">
 		<div class="area">
-			<div id="logo" class="alert alert-warning"><strong>Showing only current Event,For any event search</strong>
+			<div id="logo" class="alert alert-warning"><strong>Showing Only Current Events..,For Any Event Search</strong>
 
 			</div>
 			<ul id="navigation">
@@ -40,13 +40,16 @@ p.c {
 <li>
 
 <form class="example form-inline" action=" " style="margin:auto;max-width:300px" method="get" >{% csrf_token %}
-                <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control">
-  <button type="submit" style="float: right;"><i class="fa fa-search"></i></button>
+           <div class="row">  <div class="col-6">  <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control"></div><div class="col-6">
+  <button type="submit" class="btn btn-primary" style="float:right; height: 39px;"><i class="fa fa-search"></i></button></div> </div>
 </form>
 </li>
             </ul>
         </div></div>
+    {% for msg in messages %}
 
+               <h1> {{msg}}</h1>
+         {% endfor %}
 <div id="contents">
 		<div id="adbox">
 <section>
