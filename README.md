@@ -17,7 +17,6 @@ The full documentation is available on [Read the Docs](https://testdriven.io/blo
 - django-environ
 - Pillow==8.4.0
 
-
 ![This is an image](https://www.localogy.com/wp-content/uploads/2019/10/stripe-product-image.png).
 
 
