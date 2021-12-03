@@ -1,3 +1,3 @@
 # task-project
 
-[https://stripe.com/docs/libraries#community-libraries)]
+![](https://stripe.com/docs/libraries#community-libraries)
