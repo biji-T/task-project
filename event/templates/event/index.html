@@ -40,7 +40,7 @@ p.c {
 <li>
 
 <form class="example form-inline" action=" " style="margin:auto;max-width:300px" method="get" >{% csrf_token %}
-           <div class="row">  <div class="col-6">  <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control"></div><div class="col-6">
+           <div class="row">  <div class="col-6">  <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control" required></div><div class="col-6" >
   <button type="submit" class="btn btn-primary" style="float:right; height: 39px;"><i class="fa fa-search"></i></button></div> </div>
 </form>
 </li>
@@ -96,7 +96,7 @@ p.c {
                         <p class="c">{{ i.description }}</p>
 							<h3 style="font:15px/24px 'Abel-Regular';"><span>Venue:</span>  {{ i.location }}</h3>
 							<h3 style="font:15px/24px 'Abel-Regular';"><span>Category:</span>  {{ i.category }}</h3>
-							<p><span>Date : {{ i.startdate|date:'d/m/Y ' }} - {{ i.enddate|date:'d/m/Y ' }}</span>	</p>
+							<p><span>Date : {{ i.startdate|date:'d/m/Y H:i:a' }} - {{ i.enddate|date:'d/m/Y H:i:a' }}</span>	</p>
 
 
 
