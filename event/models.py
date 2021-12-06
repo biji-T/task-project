@@ -29,8 +29,8 @@ class Events(BaseModel):
     title = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=250, blank=True)
     location = models.CharField(max_length=200, null=False, blank=False)
-    startdate = models.DateTimeField(null=True)
-    enddate = models.DateTimeField(null=True)
+    startdate = models.DateTimeField(null=False)
+    enddate = models.DateTimeField(null=False)
     cover = models.ImageField(upload_to='images/')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -51,6 +51,10 @@ class Events(BaseModel):
     #
     # def get_display_price(self):
     #     return "{0:.2f}".format(self.price / 100)
+    
+    class Meta:
+        ordering = ['-startdate']
+        verbose_name = 'Event'
 
 
 class Booked(BaseModel):

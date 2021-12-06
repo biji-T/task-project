@@ -15,7 +15,6 @@ import stripe
 from django.conf import settings
 from django.contrib import messages
 
-
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 today = datetime.today()
@@ -29,9 +28,7 @@ class EventListView(generic.ListView):
     model = Events
     template_name = 'event/index.html'
     context_object_name = "event_list"
-    ordering = ['-startdate']
-
-    paginate_by = 1
+    paginate_by = 10
 
     def get_queryset(self):
         now = timezone.now()
