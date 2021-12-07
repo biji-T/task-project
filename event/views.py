@@ -82,9 +82,10 @@ class UpdateCommentVote(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
 
-        event_id = self.kwargs.get('event_id', None)
+        event_id = self.kwargs.get('comment_id', None)
         option = self.kwargs.get('option', None)  # like or dislike button clicked
         print("opinion..........>>", option)
+        print("id..........>>", event_id)
 
         # event = get_object_or_404(Events, pk=event_id)
         event = Events.objects.get(id=event_id)
@@ -94,13 +95,13 @@ class UpdateCommentVote(LoginRequiredMixin, View):
             # If child DisLike model doesnot exit then create
             event.dis_likes
         except Events.dis_likes.RelatedObjectDoesNotExist as identifier:
-            DisLike.objects.create(title=event)
+            DisLike.objects.create(event=event)
 
         try:
             # If child Like model doesnot exit then create
             event.likes
         except Events.likes.RelatedObjectDoesNotExist as identifier:
-            Like.objects.create(title=event)
+            Like.objects.create(event=event)
 
         if option.lower() == 'like':
 
@@ -131,7 +132,7 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
         try:
             event.booked
         except Events.booked.RelatedObjectDoesNotExist as identifier:
-            Booked.objects.create(title=event, is_paid=True)
+            Booked.objects.create(event=event, is_paid=True)
         if request.user in event.booked.users.all():
             print("already booked......>>>>>")
             messages.success(self.request, 'already booked')
@@ -169,3 +170,12 @@ class SuccessView(generic.TemplateView):
 
 class CancelledView(generic.TemplateView):
     template_name = 'event/cancelled.html'
+
+
+class FavoriteEventView(generic.ListView):
+    template_name = 'event/blog.html'
+    model = Like
+
+    def get_queryset(self):
+        context = Like.objects.filter(users=self.request.user)
+        return context

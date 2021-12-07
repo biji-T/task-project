@@ -11,8 +11,12 @@ class EventsAdmin(admin.ModelAdmin):
     search_fields = ['title', 'description']
 
 
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('event', 'created_on',  'updated_on')
+
+
 admin.site.register(Events, EventsAdmin),
-admin.site.register(Like),
+admin.site.register(Like, LikeAdmin),
 admin.site.register(DisLike),
 admin.site.register(Category),
 admin.site.register(Booked),
