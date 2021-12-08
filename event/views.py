@@ -9,11 +9,13 @@ from django.contrib.auth import views as auth_views
 from .forms import NewUserForm, LoginForm
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 import stripe
+import json
 from django.conf import settings
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -79,16 +81,19 @@ class UpdateCommentVote(LoginRequiredMixin, View):
     """Like and Dislike Event"""
 
     login_url = '/login/'
+    redirect_field_name = 'next'
 
-    def get(self, request, *args, **kwargs):
-
-        event_id = self.kwargs.get('comment_id', None)
-        option = self.kwargs.get('option', None)  # like or dislike button clicked
-        print("opinion..........>>", option)
-        print("id..........>>", event_id)
+    def post(self, request):
+        print(request.POST)
+        content_id = request.POST.get("content_id", None)
+        option = request.POST.get("operation", None)
+        print("operation..........>>", option)
+        print("content_id....2......>>", content_id)
 
         # event = get_object_or_404(Events, pk=event_id)
-        event = Events.objects.get(id=event_id)
+        event = get_object_or_404(Events, pk=content_id)
+        print(event)
+        # event = Events.objects.get(id=event_id)
         print("----->>", event)
 
         try:
@@ -107,25 +112,38 @@ class UpdateCommentVote(LoginRequiredMixin, View):
 
             if request.user in event.likes.users.all():
                 event.likes.users.remove(request.user)
+                liked = False
+                disliked = ''
             else:
                 event.likes.users.add(request.user)
                 event.dis_likes.users.remove(request.user)
+                liked = True
+                disliked = False
 
         elif option.lower() == 'dis_like':
 
             if request.user in event.dis_likes.users.all():
                 event.dis_likes.users.remove(request.user)
+                disliked = False
+                liked = ''
             else:
                 event.dis_likes.users.add(request.user)
                 event.likes.users.remove(request.user)
+                disliked = True
+                liked = False
         else:
             return HttpResponseRedirect(reverse('event:home'))
-        return HttpResponseRedirect(reverse('event:home'))
+
+        ctx = {"likes_count": event.get_total_likes(), "liked": liked, "content_id": content_id,
+               "dislike_count": event.get_total_dis_likes(), "disliked": disliked}
+        print(ctx)
+        return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
 class CreateCheckoutSessionView(LoginRequiredMixin, View):
     """Stripe Payment """
     login_url = '/login/'
+    redirect_field_name = 'next'
 
     def post(self, request, *args, **kwargs):
         event = Events.objects.get(id=self.kwargs["pk"])
@@ -173,7 +191,7 @@ class CancelledView(generic.TemplateView):
 
 
 class FavoriteEventView(generic.ListView):
-    template_name = 'event/blog.html'
+    template_name = 'event/fav_event.html'
     model = Like
 
     def get_queryset(self):

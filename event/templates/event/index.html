@@ -109,39 +109,37 @@ p.c {
 <!--      <h2>{{i.created_on}}</h2>-->
 <!--      <p>{{i.name}}.</p>-->
       <div class="text-left" style="width:240px ;height :30px;">
-         <span class="pointer">
             {% if request.user in i.likes.users.all%}
             <!-- already liked-->
-            <a href="{% url 'event:event_reaction' comment_id=i.pk option='like' %}"> <i
+          <button class="btn likin"  name="{{ i.pk }}"  value="like" id="like" style="color: blue;"> <i
                data-toggle="tooltip" data-placement="bottom" title="Unlike"
                class="like fas fa-thumbs-up pr-2">
-            <span>{{i.get_total_likes}}</span>
+            <span class='like_count {{ i.pk }}'>{{i.get_total_likes}}</span>
             </i>
-            </a>
+            </button>
             {% else %}
             <!--not liked-->
-            <a href="{% url 'event:event_reaction' comment_id=i.pk option='like' %}"><i
-               data-toggle="tooltip" data-placement="bottom" title="Like" style="color:gray;"
+            <button class="btn likin" name="{{ i.pk }}"  value="like" id="like" style="color:gray;"><i
+               data-toggle="tooltip" data-placement="bottom" title="Like"
                class="default-icon fas fa-thumbs-up pr-2 info">
-            <span> {% if i.get_total_likes  %}{{i.get_total_likes}} {% else %} 0
+            <span  class='like_count {{ i.pk }}'> {% if i.get_total_likes  %}{{i.get_total_likes}} {% else %} 0
             {% endif %}</span></i>
-            </a>
+            </button>
             {% endif %}
-         </span>
          <span class="ml-3 pointer">
          {% if request.user in i.dis_likes.users.all %}
-         <a href="{% url 'event:event_reaction' comment_id=i.pk option='dis_like' %}"><i
+          <button class="btn likin" name="{{ i.pk }}"  value="dis_like" style="color: blue;"><i
             data-toggle="tooltip" data-placement="bottom" title="i remove dislike this"
             class="dislike fas fa-thumbs-down pr-2">
-         <span>{{i.get_total_dis_likes}}</span></i>
-         </a>
+         <span class='dislike_count {{ i.pk }}'>{{i.get_total_dis_likes}}</span></i>
+         </button>
          {% else %}
-         <a href="{% url 'event:event_reaction' comment_id=i.pk option='dis_like' %}"><i
-            data-toggle="tooltip" data-placement="bottom" title="i dislike this " style="color:gray;"
+          <button class="btn likin"  name="{{ i.pk }}"  value="dis_like" id="dis" style="color:gray;"><i
+            data-toggle="tooltip" data-placement="bottom" title="i dislike this "
             class="default-icon fas fa-thumbs-down pr-2">
-         <span>{% if  i.get_total_dis_likes %}{{i.get_total_dis_likes}}
+         <span class='dislike_count {{ i.pk }}'>{% if  i.get_total_dis_likes %}{{i.get_total_dis_likes}}
          {% else %} 0 {% endif %}</span></i>
-         </a>
+          </button>
          {% endif %}
          </span>
                       {% if i.published == False %}
@@ -205,6 +203,7 @@ p.c {
  {% endblock %}
 
 {% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
   $(document).ready(function () {
    $(".range-date").hide();
@@ -267,6 +266,67 @@ else
 
   return true
 }
+
+
+$('.likin').click(function(){
+    $.ajax({
+             type: "POST",
+             url: "{% url 'event:reaction' %}",
+             data: {'content_id': $(this).attr('name'),'operation':$(this).attr('value'),'csrfmiddlewaretoken': '{{ csrf_token }}'},
+             dataType: "json",
+             success: function(response) {
+             alert(response.liked);
+             alert(response.disliked);
+             alert(response.likes_count);
+             alert(response.dislike_count);
+
+                    if(response.liked==true && response.disliked==false){
+                     selector = document.getElementsByName(response.content_id);
+                     alert("1...."+selector[0].value)
+                     if (selector[0].value=='like')
+                      $('#like').css("color","blue");
+                      $('#dis').css("color","black");
+                       $('.like_count').html('');
+                       $('.dislike_count response.content_id').html("");
+                    }
+                    else if(response.liked==false && response.disliked==''){
+                     selector = document.getElementsByName(response.content_id);
+                      alert("2...."+selector[0].value)
+                     if (selector[0].value=='like')
+                      $('#like').css("color","black");
+                      $('#dis').css("color","blue");
+                       $('.like_count response.content_id').html(response.likes_count);
+                    $('.dislike_count response.content_id').html(response.dislike_count);
+
+
+                    }
+                     else if(response.disliked==true && response.liked==false){
+                       selector = document.getElementsByName(response.content_id);
+ alert("3..."+selector[0].value)
+                       $('#like').css("color","black");
+                      $('#dis').css("color","blue");
+                    $('.dislike_count response.content_id').html(response.dislike_count);
+                       $('.like_count response.content_id').html(response.likes_count);
+
+                    }
+                     else if(response.disliked==false && response.like==''){
+                      selector = document.getElementsByName(response.content_id);
+                       alert("4..."+selector[0].value)
+
+                      $('#dis').css("color","black");
+                      $('#like').css("color","black");
+                    $('.dislike_count response.content_id').html(response.dislike_count);
+                       $('.like_count response.content_id').html(response.likes_count);
+
+                    }
+
+
+              }
+
+        });
+
+  })
+
 
     </script>
 {% endblock javascripts %}
