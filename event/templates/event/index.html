@@ -18,6 +18,62 @@ p.c {
 .column{
  padding-right :10px;
 }
+.custom-select {
+  position: relative;
+  font-family: Arial;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: DodgerBlue;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
 </style>
 
@@ -57,19 +113,19 @@ p.c {
 
 
 
-<section  style="padding-left:85px;">
+<section  style="padding-left:85px; padding-top:5px; ">
 	<form  name="myForm"  action=" " method="get" onsubmit="return validateForm()">
-<select id="filterstate"  class="form-select" aria-label="Disabled select example" >
+<select id="filterstate"   class="custom-select" style="width:200px; padding-top:5px;">
   <option value="0" >Filter By</option>
 	    <option value="category">Category</option>
     <option  value="range_value">Date Range</option>
-</select><a href="{% url 'event:home' %} ">Back</a>
+</select><a href="{% url 'event:home' %} " style="padding-left:30px;">Back</a>
             <div class="row">
 				 <div class="col" >
                       <select class="form-control" id="CategoryId" name="category" style="width:30%">
  <option  value="" selected="selected">--select--</option>
   {% for cat in category_list %}
-   <option value="{{org.id}}">{{cat.name|capfirst}}</option>
+   <option value="{{cat.id}}">{{cat.name|capfirst}}</option>
   {% endfor %}
 </select> </div>
 
@@ -89,7 +145,7 @@ p.c {
 </form>
 </section></div>
 			<div class="area"></div>
-			<ul><h1><span><center><img src="{% static 'event/images/events.jpg'%}" alt="current Events" height="96" width="200" /></center></span></h1>
+			<ul><center><img src="{% static 'event/images/events.jpg'%}" alt="current Events" height="90" width="200" /></center>
 					 {% for i in event_list %}
 
 						<div  id="eventbox" style="height: 300px;">
@@ -149,8 +205,6 @@ p.c {
 
                    <button type="button">Booked</button>
             {% else %}
-<!--                       <button type="submit">-->
-<!--                  <a href="{% url 'event:create-checkout-session' i.id  %}">Book  &#x20b9;500</a></button>-->
              <form action="{% url 'event:create-checkout-session' i.id %}" method="POST">   {% csrf_token %}
                                          <button type="submit" style="color:blue;">Book  &#x20b9;500</button>
              </form>
@@ -275,48 +329,24 @@ $('.likin').click(function(){
              data: {'content_id': $(this).attr('name'),'operation':$(this).attr('value'),'csrfmiddlewaretoken': '{{ csrf_token }}'},
              dataType: "json",
              success: function(response) {
-             alert(response.liked);
-             alert(response.disliked);
-             alert(response.likes_count);
-             alert(response.dislike_count);
-
-                    if(response.liked==true && response.disliked==false){
-                     selector = document.getElementsByName(response.content_id);
-                     alert("1...."+selector[0].value)
-                     if (selector[0].value=='like')
-                      $('#like').css("color","blue");
-                      $('#dis').css("color","black");
-                       $('.like_count').html('');
-                       $('.dislike_count response.content_id').html("");
-                    }
-                    else if(response.liked==false && response.disliked==''){
-                     selector = document.getElementsByName(response.content_id);
-                      alert("2...."+selector[0].value)
-                     if (selector[0].value=='like')
-                      $('#like').css("color","black");
-                      $('#dis').css("color","blue");
-                       $('.like_count response.content_id').html(response.likes_count);
-                    $('.dislike_count response.content_id').html(response.dislike_count);
+             if (response.authenticated==false){
+                window.location = '/login/'
+             }
+               selector = document.getElementsByName(response.content_id);
+                    if(response.liked==true){
+                      $(selector).css("color","blue");
+                      $('.like_count').text('')
+                      $('.dislike_count').text('')
+                         $('#dis').css("text","black");
 
 
                     }
-                     else if(response.disliked==true && response.liked==false){
-                       selector = document.getElementsByName(response.content_id);
- alert("3..."+selector[0].value)
-                       $('#like').css("color","black");
-                      $('#dis').css("color","blue");
-                    $('.dislike_count response.content_id').html(response.dislike_count);
-                       $('.like_count response.content_id').html(response.likes_count);
+                    else if(response.liked==false){
+                      $(selector).css("color","black");
+                       $('#dis').css("color","black");
+                         $('.like_count').text('')
+                         $('.dislike_count').text('')
 
-                    }
-                     else if(response.disliked==false && response.like==''){
-                      selector = document.getElementsByName(response.content_id);
-                       alert("4..."+selector[0].value)
-
-                      $('#dis').css("color","black");
-                      $('#like').css("color","black");
-                    $('.dislike_count response.content_id').html(response.dislike_count);
-                       $('.like_count response.content_id').html(response.likes_count);
 
                     }
 

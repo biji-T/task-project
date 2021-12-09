@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your forms here.
@@ -20,6 +21,15 @@ class NewUserForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter a valid user name'}), required=True)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter password'}), required=True)
+    error_css_class = 'errorlist'
+
+    error_messages = {
+        'invalid_login': _(
+            "Please enter a correct %(username)s and password."
+            "fields may be case-sensitive."
+        ),
+        'inactive': _("This account is inactive."),
+    }
 
     class Meta:
         model = User
