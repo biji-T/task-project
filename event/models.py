@@ -48,6 +48,7 @@ class Events(BaseModel):
 
     def get_total_dis_likes(self):
         return self.dis_likes.users.count()
+
     #
     # def get_display_price(self):
     #     return "{0:.2f}".format(self.price / 100)
@@ -72,7 +73,8 @@ class Like(BaseModel):
     """ like  event """
 
     event = models.OneToOneField(Events, related_name="likes", on_delete=models.CASCADE)
-    users = models.ManyToManyField(User, related_name='requirement_likes')
+    users = models.ManyToManyField(User, related_name='requirement_likes', through='ClassMate')
+    liked_on = models.DateTimeField(null=True, blank=True, auto_now_add=True)
 
     def __str__(self):
         return str(self.event)[:30]

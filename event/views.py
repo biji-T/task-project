@@ -43,6 +43,7 @@ class EventListView(generic.ListView):
         if query:
             return Events.objects.filter(
                 Q(title__icontains=query) |
+                Q(category__name__icontains=query) |
                 Q(location__icontains=query) |
                 Q(description__icontains=query)
             )
@@ -98,7 +99,6 @@ class UpdateCommentVote(View):
             print(event)
             # event = Events.objects.get(id=event_id)
             print("----->>", event)
-
 
             try:
                 # If child DisLike model doesnot exit then create

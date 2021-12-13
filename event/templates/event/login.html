@@ -186,8 +186,11 @@ width:80%;
             </div>
             {% load crispy_forms_tags %}
 
-
             <div class="col-lg-6">
+                {% for msg in messages %}
+			 <span class="error" style="color:red; font-size:16px;">
+ {{msg}}</p></span>
+            {% endfor %}
                 <div class="card2 card border-0 px-4 py-5">
 {% if form.errors %}
 

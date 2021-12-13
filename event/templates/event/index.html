@@ -82,7 +82,7 @@ p.c {
 	<div id="header">
 		<div class="area">
 			<div id="logo" >
-				<a href="index.html"><img src="{% static 'event/images/logo.png'%}" alt="LOGO" height="86" width="170" /></a>
+				<a href="/"><img src="{% static 'event/images/logo.png'%}" alt="LOGO" height="86" width="170" /></a>
 			</div>
 			<ul id="navigation">
 					<li>
@@ -114,7 +114,7 @@ p.c {
 
 
 <section  style="padding-left:85px; padding-top:5px; ">
-	<form  name="myForm"  action=" " method="get" onsubmit="return validateForm()">
+	<form  name="myForm"  action=" " onsubmit="return validateForm()"  method="get" >
 <select id="filterstate"   class="custom-select" style="width:200px; padding-top:5px;">
   <option value="0" >Filter By</option>
 	    <option value="category">Category</option>
@@ -140,7 +140,7 @@ p.c {
 					   </div>
 			</div>
 		<br>
-<center><button  name="submit" id="submit" type="submit" value="submit">submit</button></center>
+<center><button  name="submit" id="submit" type="submit" value="submit" >submit</button></center>
            <div id="error"></div>
 </form>
 </section></div>
@@ -205,7 +205,7 @@ p.c {
 
                    <button type="button">Booked</button>
             {% else %}
-             <form action="{% url 'event:create-checkout-session' i.id %}" method="POST">   {% csrf_token %}
+             <form action="{% url 'event:create-checkout-session' i.id %}" method="POST" style="padding-top:10px;">   {% csrf_token %}
                                          <button type="submit" style="color:blue;">Book  &#x20b9;500</button>
              </form>
 
@@ -223,7 +223,12 @@ p.c {
    </div>
 </div>		</div>
 
-                        </div>      </div>
+                        </div>
+
+
+                        </div>
+                 {% empty %}
+                                <h2><span style="text-decoration: underline;padding-left:10px; ">No Event</span></h2>
 					{% endfor %}
 
 				</ul>
@@ -299,7 +304,7 @@ function validateForm() {
   var startdate = $("#startdate").val();
   var enddate = $("#enddate").val();
 
-  if (filterstate === "") {
+  if (filterstate === "0") {
    alert("Check filteration");
    return false
   }
@@ -307,17 +312,15 @@ function validateForm() {
   if (filterstate === "category") {
   if( CategoryId=== ""){
    alert("Category  can't be blank");
-  }
    return false
+  }
 }
  if (filterstate === "range_value"){
  if( startdate=== "" && enddate==="") {
  alert("Date  can't be blank");
+ return false
 }
-return false
 }
-else
-
   return true
 }
 

@@ -30,7 +30,7 @@ p.c {
 			<ul id="navigation">
 					<li>
 					 {% if user.is_authenticated %}
-                        <li><a href="{% url 'event:fav-event' %}" class="btn btn-default btn-rounded"> Favorite Events</a></li>
+                        <li><a href="{% url 'event:home' %}" class="btn btn-default btn-rounded"> Home</a></li>
 
         <li><a href="{% url 'event:logout' %}" class="btn btn-default btn-rounded"> ({{ request.user.username }}) Logout</a></li>
           {% else %}
@@ -59,19 +59,19 @@ p.c {
 
 
 
-<section  style="padding-left:85px;">
-	<form  name="myForm"  action=" " method="get" onsubmit="return validateForm()">
-<select id="filterstate"  class="form-select" aria-label="Disabled select example" >
+<section  style="padding-left:85px; padding-top:5px; ">
+	<form  name="myForm"  action=" "  method="get" >
+<select id="filterstate"   class="custom-select" style="width:200px; padding-top:5px;">
   <option value="0" >Filter By</option>
 	    <option value="category">Category</option>
     <option  value="range_value">Date Range</option>
-</select><a href="{% url 'event:home' %} ">Back</a>
+</select><a href="{% url 'event:home' %} " style="padding-left:30px;">Back</a>
             <div class="row">
 				 <div class="col" >
                       <select class="form-control" id="CategoryId" name="category" style="width:30%">
  <option  value="" selected="selected">--select--</option>
   {% for cat in category_list %}
-   <option value="{{org.id}}">{{cat.name|capfirst}}</option>
+   <option value="{{cat.id}}">{{cat.name|capfirst}}</option>
   {% endfor %}
 </select> </div>
 
@@ -86,7 +86,7 @@ p.c {
 					   </div>
 			</div>
 		<br>
-<center><button  name="submit" id="submit" type="submit" value="submit">submit</button></center>
+<center><button  name="submit" id="submit" type="submit" value="submit" onclick="validateForm()">submit</button></center>
            <div id="error"></div>
 </form>
 </section></div>
@@ -94,12 +94,14 @@ p.c {
 			<ul><h1><span><center>Liked Events</center></span></h1>
 					 {% for i in object_list %}
 
-						<div  id="eventbox" style="height: 300px;">
+						<div  id="eventbox" style="height: auto; padding-bottom:5px;">
                             <h2><span style="text-decoration: underline;padding-left:10px; ">{{ i.event }}</span></h2>
                             <div class="row">
-						<div class="column"><img src="{{ i.event.cover.url}}"  alt="Img" height="200" width="250" style="padding-right: 20px;" /></div>
-                            <div  class="column">
-							<h3 style="font:15px/24px 'Abel-Regular';"><span>Created Date:</span>  {{ i.created_on }}</h3>
+						<div class="column"><img src="{{ i.event.cover.url}}"  alt="Img" height="200" width="250" style="padding-right: 20px; padding-bottom:15px;" /></div>
+                            <div  class="column" style="padding-top:50px;">
+								                        <p class="c">{{ i.event.description }}</p>
+
+							<h3 style="font:15px/24px 'Abel-Regular'; "><span style="padding-bottom:8px;">Liked on:</span>  {{ i.created_on }}</h3>
 
 
 
