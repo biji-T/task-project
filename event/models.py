@@ -48,6 +48,7 @@ class Events(BaseModel):
 
     def get_total_dis_likes(self):
         return self.dis_likes.users.count()
+
     #
     # def get_display_price(self):
     #     return "{0:.2f}".format(self.price / 100)
@@ -86,3 +87,15 @@ class DisLike(BaseModel):
 
     def __str__(self):
         return str(self.event)[:30]
+
+
+class LikeTest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    event = models.ForeignKey(Events, on_delete=models.SET_NULL, null=True, blank=True)
+    liked = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'liketest'
+        unique_together = (('user', 'event'),)

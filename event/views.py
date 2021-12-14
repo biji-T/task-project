@@ -3,7 +3,7 @@ from django.views import generic
 from .models import *
 from django.views import View
 from django.utils.timezone import datetime
-from django.db.models import Q
+from django.db.models import Q , Count
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import views as auth_views
 from .forms import NewUserForm, LoginForm
@@ -98,7 +98,36 @@ class UpdateCommentVote(View):
             event = get_object_or_404(Events, pk=content_id)
             print(event)
             # event = Events.objects.get(id=event_id)
-            print("----->>", event)
+            print("----->>", event,request.user.id)
+
+            try:
+                new_like = LikeTest.objects.get(user=request.user, event=event)
+                print(new_like)
+                if new_like:
+                    if  new_like.liked == False:
+                        print("True")
+                        new_like.liked = True
+                        new_like.save()
+                        okey = 'true'
+
+                    elif  new_like.liked == True:
+                        print("False")
+                        new_like.liked = False
+                        new_like.save()
+                        okey = 'false'
+            # the user already liked this picture before
+            except LikeTest.DoesNotExist:
+                LikeTest.objects.create(user=request.user, event=event,liked=True)
+                print("new...")
+
+            total_like = Events.objects.annotate(
+                liketest=Count('LikeTests', filter=Q(LikeTests__Liked=True))
+            )
+            print("total_like",total_like)
+
+
+
+
 
             try:
                 # If child DisLike model doesnot exit then create
@@ -198,8 +227,8 @@ class CancelledView(generic.TemplateView):
 
 class FavoriteEventView(generic.ListView):
     template_name = 'event/fav_event.html'
-    model = Like
+    model = LikeTest
 
     def get_queryset(self):
-        context = Like.objects.filter(users=self.request.user)
+        context = LikeTest.objects.filter(user=self.request.user,liked=True)
         return context

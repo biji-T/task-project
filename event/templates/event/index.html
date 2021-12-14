@@ -165,7 +165,7 @@ p.c {
 <!--      <h2>{{i.created_on}}</h2>-->
 <!--      <p>{{i.name}}.</p>-->
       <div class="text-left" style="width:240px ;height :30px;">
-            {% if request.user in i.likes.users.all%}
+            {% if request.user in i.liketest.user.all%}
             <!-- already liked-->
           <button class="btn likin"  name="{{ i.pk }}"  value="like" id="like" style="color: blue;"> <i
                data-toggle="tooltip" data-placement="bottom" title="Unlike"
