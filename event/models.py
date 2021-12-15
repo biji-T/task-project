@@ -44,14 +44,13 @@ class Events(BaseModel):
         return False
 
     def get_total_likes(self):
-        return self.likes.users.count()
+        return self.likest.count()
 
     def get_total_dis_likes(self):
         return self.dis_likes.users.count()
 
-    #
-    # def get_display_price(self):
-    #     return "{0:.2f}".format(self.price / 100)
+    def get_liked_user(self,request):
+        return self.likest.filter(user=request.user) and True or False
 
     class Meta:
         ordering = ['-startdate']
@@ -90,12 +89,13 @@ class DisLike(BaseModel):
 
 
 class LikeTest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    event = models.ForeignKey(Events, on_delete=models.SET_NULL, null=True, blank=True)
-    liked = models.BooleanField(default=False)
+    event = models.ForeignKey(Events, related_name='likest', on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(User, related_name='users', on_delete=models.SET_NULL, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'liketest'
         unique_together = (('user', 'event'),)
+
+    def __str__(self):
+        return str(self.event)[:30]

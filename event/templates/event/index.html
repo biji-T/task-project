@@ -154,8 +154,8 @@ p.c {
 						<div class="column"><img src="{{ i.cover.url}}"  alt="Img" height="200" width="250" style="padding-right: 20px;" /></div>
                             <div  class="column">
                         <p class="c">{{ i.description }}</p>
-							<h3 style="font:15px/24px 'Abel-Regular';"><span>Venue:</span>  {{ i.location }}</h3>
-							<h3 style="font:15px/24px 'Abel-Regular';"><span>Category:</span>  {{ i.category }}</h3>
+							<h3 style="font:15px/24px 'Abel-Regular';"><span>Venue:</span>  {{ i.user.all }}</h3>
+							<h3 style="font:15px/24px 'Abel-Regular';"><span>Category:</span>  {{ i.likes.users.all }}</h3>
 							<p><span>Date : {{ i.startdate|date:'d/m/Y H:i:a' }} - {{ i.enddate|date:'d/m/Y H:i:a' }}</span>	</p>
 
 
@@ -165,15 +165,21 @@ p.c {
 <!--      <h2>{{i.created_on}}</h2>-->
 <!--      <p>{{i.name}}.</p>-->
       <div class="text-left" style="width:240px ;height :30px;">
-            {% if request.user in i.liketest.user.all%}
-            <!-- already liked-->
-          <button class="btn likin"  name="{{ i.pk }}"  value="like" id="like" style="color: blue;"> <i
-               data-toggle="tooltip" data-placement="bottom" title="Unlike"
+
+
+            {% for j in i.likest.all %}
+
+           {% if request.user  == j.user %}
+             <button class="btn likin"  name="{{ i.pk }}"  value="like" id="like" style="color: blue;"> <i
+               data-toggle="tooltip" data-placement="bottom" title="Already Liked"
                class="like fas fa-thumbs-up pr-2">
             <span class='like_count {{ i.pk }}'>{{i.get_total_likes}}</span>
             </i>
             </button>
-            {% else %}
+
+
+            {% break %}{% else %}
+
             <!--not liked-->
             <button class="btn likin" name="{{ i.pk }}"  value="like" id="like" style="color:gray;"><i
                data-toggle="tooltip" data-placement="bottom" title="Like"
@@ -181,7 +187,7 @@ p.c {
             <span  class='like_count {{ i.pk }}'> {% if i.get_total_likes  %}{{i.get_total_likes}} {% else %} 0
             {% endif %}</span></i>
             </button>
-            {% endif %}
+            {% endif %}  {% endfor %}
          <span class="ml-3 pointer">
          {% if request.user in i.dis_likes.users.all %}
           <button class="btn likin" name="{{ i.pk }}"  value="dis_like" style="color: blue;"><i
@@ -345,7 +351,8 @@ $('.likin').click(function(){
 
                     }
                     else if(response.liked==false){
-                      $(selector).css("color","black");
+                    alert("Liked already");
+                      $(selector).css("color","blue");
                        $('#dis').css("color","black");
                          $('.like_count').text('')
                          $('.dislike_count').text('')

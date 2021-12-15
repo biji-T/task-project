@@ -53,14 +53,13 @@ class EventListView(generic.ListView):
             queryset = Events.objects.filter(category=category)
         else:
             queryset = Events.objects.filter(~Q(startdate__gte=now),
-                                             ~Q(enddate__lte=now))
+                                             ~Q(enddate__lte=now)).prefetch_related("likest")
 
         return queryset
 
     def get_context_data(self, **kwargs):
         queryset = super().get_context_data(**kwargs)
         queryset['category_list'] = Category.objects.all()
-
         return queryset
 
 
@@ -97,75 +96,43 @@ class UpdateCommentVote(View):
             # event = get_object_or_404(Events, pk=event_id)
             event = get_object_or_404(Events, pk=content_id)
             print(event)
+            user_likes_this = event.likest.filter(user=request.user) and True or False
+            print(user_likes_this)
+
             # event = Events.objects.get(id=event_id)
             print("----->>", event,request.user.id)
+            liked =False
+            disliked = False
 
             try:
-                new_like = LikeTest.objects.get(user=request.user, event=event)
-                print(new_like)
-                if new_like:
-                    if  new_like.liked == False:
-                        print("True")
-                        new_like.liked = True
-                        new_like.save()
-                        okey = 'true'
+                # new_like = LikeTest.objects.get(user=request.user, event=event)
+                # print(new_like)
+                new_like, created = LikeTest.objects.get_or_create(user=request.user, event=event,)
 
-                    elif  new_like.liked == True:
-                        print("False")
-                        new_like.liked = False
-                        new_like.save()
-                        okey = 'false'
+                if not created:
+                    liked = False
+                # the user already liked this picture before
+                else:
+                    liked = True
+                # if new_like:
+                #     if  new_like.liked == False:
+                #         print("True")
+                #         new_like.liked = True
+                #         new_like.save()
+                #         okey = 'true'
+                #
+                #     elif  new_like.liked == True:
+                #         print("False")
+                #         new_like.liked = False
+                #         new_like.save()
+                #         okey = 'false'
             # the user already liked this picture before
             except LikeTest.DoesNotExist:
-                LikeTest.objects.create(user=request.user, event=event,liked=True)
-                print("new...")
-
-            total_like = Events.objects.annotate(
-                liketest=Count('LikeTests', filter=Q(LikeTests__Liked=True))
-            )
-            print("total_like",total_like)
-
-
-
-
-
-            try:
-                # If child DisLike model doesnot exit then create
-                event.dis_likes
-            except Events.dis_likes.RelatedObjectDoesNotExist as identifier:
-                DisLike.objects.create(event=event)
-
-            try:
-                # If child Like model doesnot exit then create
-                event.likes
-            except Events.likes.RelatedObjectDoesNotExist as identifier:
-                Like.objects.create(event=event)
-
-            if option.lower() == 'like':
-
-                if request.user in event.likes.users.all():
-                    event.likes.users.remove(request.user)
-                    liked = False
-                    disliked = ''
-                else:
-                    event.likes.users.add(request.user)
-                    event.dis_likes.users.remove(request.user)
-                    liked = True
-                    disliked = ''
-
-            elif option.lower() == 'dis_like':
-
-                if request.user in event.dis_likes.users.all():
-                    event.dis_likes.users.remove(request.user)
-                    disliked = False
-                    liked = ''
-                else:
-                    event.dis_likes.users.add(request.user)
-                    event.likes.users.remove(request.user)
-                    disliked = True
                 return HttpResponseRedirect(reverse('event:home'))
-            else:
-                return HttpResponseRedirect(reverse('event:home'))
+
+
+                # LikeTest.objects.create(user=request.user, event=event,liked=True)
+                # print("new...")
 
             ctx = {"likes_count": event.get_total_likes(), "liked": liked, "content_id": content_id,
                    "dislike_count": event.get_total_dis_likes(), "disliked": disliked}
