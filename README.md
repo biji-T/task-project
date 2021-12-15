@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # task-project
 
 ## Introduction
@@ -25,3 +26,6 @@ http://bijit.pythonanywhere.com/
 
 
 ### End
+=======
+# event-sayone
+>>>>>>> cff3a8dbea073fae99b38efc45f110b6a13e0956

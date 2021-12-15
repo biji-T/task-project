@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .env
 db.sqlite3
 __pycache__/
@@ -24,3 +25,23 @@ staticfiles/
 .venv
 testenv/
 ENV/
+=======
+# Build and Release Folders
+bin-debug/
+bin-release/
+[Oo]bj/
+[Bb]in/
+
+# Other files and folders
+.settings/
+
+# Executables
+*.swf
+*.air
+*.ipa
+*.apk
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
+>>>>>>> cff3a8dbea073fae99b38efc45f110b6a13e0956
